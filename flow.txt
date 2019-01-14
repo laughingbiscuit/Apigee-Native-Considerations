@@ -1,0 +1,38 @@
+@startuml
+autonumber
+participant "Native App" as a
+participant Browser as b
+participant Apigee as api
+participant IAM as id
+participant "Resource Server" as rs
+
+note over a,rs: GET Authorize
+
+a->a: Generate and store code_verifier and state
+a->a: Create code challenge
+a->b: Open Browser
+b->api: GET /authorize?client_id=...code_challenge=...state=...
+api->api: code_challenge stored as Attribute on Authorization Code
+
+note over b,id: Login and Consent Flow
+b->id:
+id->b:
+note over b,id: User successfully authenticates and consents in browser
+
+api->b: 302 Location: (redirect uri)?code=...&state=...
+b->a: Follow redirect
+a->a: Check state
+
+note over a,rs: POST Token
+a->api: POST /token code=... code_verifier=...
+api->api: Retrieve code_challenge Attribute and validate code_verifier
+api->a: 200 OK + access_token, refresh_token...
+
+a->api: GET /accounts + bearer token
+api -> api: Validate token
+api->rs: GET /accounts
+rs->api: 200 OK + response
+api->a: 200 OK + response
+
+
+@enduml
