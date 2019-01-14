@@ -12,13 +12,13 @@ a->a: Generate and store code_verifier and state
 a->a: Create code challenge
 a->b: Open Browser
 b->api: GET /authorize?client_id=...code_challenge=...state=...
-api->api: code_challenge stored as Attribute on Authorization Code
 
 note over b,id: Login and Consent Flow
 b->id:
 id->b:
 note over b,id: User successfully authenticates and consents in browser
 
+api->api: code_challenge stored as Attribute on Authorization Code
 api->b: 302 Location: (redirect uri)?code=...&state=...
 b->a: Follow redirect
 a->a: Check state
